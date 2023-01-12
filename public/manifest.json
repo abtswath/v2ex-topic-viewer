@@ -4,12 +4,16 @@
   "description": "view v2ex topic content under topic",
   "version": "0.0.1",
   "action": {
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icon.png",
       "24": "icon.png",
       "32": "icon.png"
     }
   },
+  "permissions": [
+    "storage"
+  ],
   "content_scripts": [
     {
       "js": [

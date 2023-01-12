@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POPUP</title>
+    <style>
+        .settings-form {
+            width: 300px;
+        }
+
+        .form-item {
+            display: flex;
+            flex-shrink: 0;
+            height: 28px;
+        }
+
+        .form-item-label {
+            width: 100px;
+            height: 28px;
+            text-align: right;
+            line-height: 28px;
+        }
+
+        .form-item-input {
+            height: 28px;
+            line-height: 28px;
+        }
+
+        #right {
+            margin-left: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="settings-form">
+        <div class="form-item">
+            <label class="form-item-label">预览框位置：</label>
+            <div class="form-item-input">
+                <input checked type="radio" value="under-topic" name="containerPosition" id="under-topic">
+                <label for="under-topic">话题下方</label>
+                <input type="radio" value="right" name="containerPosition" id="right">
+                <label for="right">页面右侧</label>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./popup.js"></script>
+
+</html>
