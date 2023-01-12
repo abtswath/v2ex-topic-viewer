@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "V++",
+  "description": "view v2ex topic content under topic",
+  "version": "0.0.1",
+  "action": {
+    "default_icon": {
+      "16": "icon.png",
+      "24": "icon.png",
+      "32": "icon.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "./content.js"
+      ],
+      "matches": [
+        "https://v2ex.com/",
+        "https://www.v2ex.com/"
+      ]
+    }
+  ]
+}
