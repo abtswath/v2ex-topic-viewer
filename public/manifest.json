@@ -12,10 +12,10 @@
     }
   },
   "icons": {
-    "16": "assets/icon_16.png",
-    "48": "assets/icon_48.png",
-    "128": "assets/icon_128.png",
-    "256": "assets/icon_256.png"
+    "16": "icon_16.png",
+    "48": "icon_48.png",
+    "128": "icon_128.png",
+    "256": "icon_256.png"
   },
   "permissions": [
     "storage"
@@ -26,8 +26,8 @@
         "./content.js"
       ],
       "matches": [
-        "https://v2ex.com/",
-        "https://www.v2ex.com/"
+        "https://v2ex.com/*",
+        "https://www.v2ex.com/*"
       ]
     }
   ]
