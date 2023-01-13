@@ -1,5 +1,5 @@
 import "@webcomponents/webcomponentsjs";
-import { TopicViewer } from './components';
+import { FRAME_NAME, TopicViewer } from './components';
 
 export const getParent = (el: HTMLElement, selector: string): HTMLElement | null => {
     if (!el.parentElement) {
@@ -43,51 +43,51 @@ const insertAfterTopicItem = (topicViewer: HTMLElement, topicItem: HTMLElement) 
     topicItem.scrollIntoView();
     topicItem.parentElement?.insertBefore(topicViewer, topicItem.nextElementSibling);
 }
-const insertPageRight = (topicViewer: HTMLElement) => {
+const insertPageRight = (topicViewer: HTMLElement, topicItem: HTMLElement) => {
     if (rightContainer === null) {
         rightContainer = createRightContainer();
     }
     topicViewer.setAttribute('data-height', '100%');
     rightContainer.appendChild(topicViewer);
+    topicItem.scrollIntoView();
 }
 
 const viewTopic = (evt: MouseEvent) => {
     if (evt.ctrlKey) {
         return;
     }
-    const el = evt.target! as HTMLElement;
-    if (el.tagName.toLowerCase() == 'a' && el.className.indexOf('topic-link') >= 0) {
-        const topicItem = getParent(el, 'div.cell');
-        if (topicItem === null) {
-            return;
-        }
-        evt.preventDefault();
-        const anchor = el as HTMLAnchorElement;
-        if (shouldCloseViewer(anchor.href)) {
-            lastClickedTopic = '';
-            rightContainer?.remove();
-            document.querySelector('topic-viewer')?.remove();
-            return;
-        }
-        document.querySelector('topic-viewer')?.remove();
-        const topicViewer = document.createElement('topic-viewer');
-        topicViewer.setAttribute('data-uri', anchor.href);
-        chrome.storage.local.get('settings')
-            .then((data) => {
-                switch (data?.settings?.containerPosition) {
-                    case 'right':
-                        insertPageRight(topicViewer);
-                        break;
-                    default:
-                        insertAfterTopicItem(topicViewer, topicItem);
-                        break;
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                insertAfterTopicItem(topicViewer, topicItem);
-            });
+    const el = evt.target as HTMLAnchorElement;
+    const topicItem = getParent(el, 'div.cell');
+    if (topicItem === null) {
+        return;
     }
+    evt.preventDefault();
+    const anchor = el as HTMLAnchorElement;
+    if (shouldCloseViewer(anchor.href)) {
+        lastClickedTopic = '';
+        rightContainer?.remove();
+        rightContainer = null;
+        document.querySelector('topic-viewer')?.remove();
+        return;
+    }
+    document.querySelector('topic-viewer')?.remove();
+    const topicViewer = document.createElement('topic-viewer');
+    topicViewer.setAttribute('data-uri', anchor.href);
+    chrome.storage.local.get('settings')
+        .then((data) => {
+            switch (data?.settings?.containerPosition) {
+                case 'right':
+                    insertPageRight(topicViewer, topicItem);
+                    break;
+                default:
+                    insertAfterTopicItem(topicViewer, topicItem);
+                    break;
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            insertAfterTopicItem(topicViewer, topicItem);
+        });
 };
 
 if (document.querySelectorAll('a.topic-link').length > 0) {
