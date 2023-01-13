@@ -52,19 +52,77 @@ export class TopicViewer extends HTMLElement {
     }
 
     protected removeContent() {
-        this.container.querySelector('#Main')?.remove();
+        this.$('#Main')?.remove();
     }
 
     protected putContent(content: Node) {
         this.container.appendChild(content);
         this.hookPaginationEvent();
         this.hookReply();
+        this.hookButton();
+    }
+
+    protected hookButton() {
+        this.$('#reply-box a[href=#]')?.addEventListener('click', this.goTop);
+        this.$('#topic_buttons a:nth-of-type(1)')?.addEventListener('click', this.favoriteAndUnfavoriteTopic);
+        this.hookIgnoreTopicButton();
+    }
+
+    private hookIgnoreTopicButton() {
+        const ignoreButton = this.$('#topic_buttons a:nth-of-type(3)');
+        if (ignoreButton !== null) {
+            const newIgnoreButton = this.cloneAndDisableInlineEvent({ el: ignoreButton });
+            ignoreButton.replaceWith(newIgnoreButton);
+            newIgnoreButton.addEventListener('click', () => {
+                const str = (newIgnoreButton as HTMLAnchorElement).getAttribute('disabled_onclick');
+                if (str === null) {
+                    return;
+                }
+                const matches = str.match(/location.href = '(.*)';/);
+                if (matches !== null) {
+                    if (window.confirm('确定不想再看到这个主题？')) {
+                        fetch(matches[1])
+                            .then(() => {
+                                this.fetchTopic();
+                            })
+                            .catch((err) => {
+                                console.error(err);
+                            });
+                    }
+                }
+            });
+        }
+    }
+
+    private favoriteAndUnfavoriteTopic(e: Event) {
+        e.preventDefault();
+        const uri = (e.target as HTMLAnchorElement).href;
+        fetch(uri)
+            .then(() => {
+                this.fetchTopic();
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+    }
+
+    private goTop(e: Event) {
+        e.preventDefault();
+        this.$('#Main')?.scrollIntoView();
+    }
+
+    private $(selector: string) {
+        return this.container.querySelector(selector);
+    }
+
+    private $all(selector: string) {
+        return this.container.querySelectorAll(selector);
     }
 
     protected hookPaginationEvent() {
         [
-            ...Array.from(this.container.querySelectorAll('a.page_current')),
-            ...Array.from(this.container.querySelectorAll('a.page_normal'))
+            ...Array.from(this.$all('a.page_current')),
+            ...Array.from(this.$all('a.page_normal'))
         ].forEach(el => {
             el.addEventListener('click', (e) => this.pageAnchorHandler(e, (el as HTMLAnchorElement).href));
         });
@@ -72,32 +130,35 @@ export class TopicViewer extends HTMLElement {
             ...Array.from(this.shadowRoot!.querySelectorAll('td[title=上一页]')),
             ...Array.from(this.shadowRoot!.querySelectorAll('td[title=下一页]'))
         ].forEach(el => {
-            const newNode = el.cloneNode(true) as HTMLElement;
-            const newHTML = newNode.outerHTML.replace('onclick', 'disabled_onclick');
-            const tr = document.createElement('tr');
-            tr.innerHTML = newHTML;
-            const newButton = tr.firstChild!.cloneNode(true);
-            (el as HTMLElement).replaceWith(newButton);
+            (el as HTMLElement).replaceWith(this.cloneAndDisableInlineEvent({ el }));
         });
         this.shadowRoot!.querySelectorAll('td[disabled_onclick]').forEach(el => {
             const onClickAttrValue = el.getAttribute('disabled_onclick');
             el.addEventListener('click', (e) => this.pageButtonHandler(e, onClickAttrValue));
         })
-        this.container.querySelectorAll('input.page_input').forEach(el => {
-            const newNode = el.cloneNode(true) as HTMLElement;
-            const newHTML = newNode.outerHTML.replace('onkeydown', 'disabled_onkeydown');
-            const div = document.createElement('div');
-            div.innerHTML = newHTML;
-            const newInput = div.firstChild!.cloneNode(true);
-            (el as HTMLElement).replaceWith(newInput);
+        this.$all('input.page_input').forEach(el => {
+            (el as HTMLElement).replaceWith(this.cloneAndDisableInlineEvent({ el, event: 'onkeydown', deep: true }));
         });
-        this.container.querySelectorAll('input[disabled_onkeydown]').forEach(el => {
+        this.$all('input[disabled_onkeydown]').forEach(el => {
             el.addEventListener('keydown', (e) => this.pageInputHandler(e as KeyboardEvent, (el as HTMLInputElement)));
         });
     }
 
+    private cloneAndDisableInlineEvent({ el, tag = 'div', event = 'click', deep = true }: {
+        el: Element,
+        event?: string,
+        tag?: string,
+        deep?: boolean
+    }) {
+        const newNode = el.cloneNode(deep) as HTMLElement;
+        const newHTML = newNode.outerHTML.replace(event, `disabled_${event}`);
+        const container = document.createElement(tag);
+        container.innerHTML = newHTML;
+        return container.firstChild!.cloneNode(true);
+    }
+
     protected hookReply() {
-        this.container.querySelector('input[value=回复]')?.parentElement?.parentElement?.addEventListener('submit', (evt: SubmitEvent) => {
+        this.$('input[value=回复]')?.parentElement?.parentElement?.addEventListener('submit', (evt: SubmitEvent) => {
             evt.preventDefault();
             const form = (evt.target as HTMLFormElement);
             const action = form.getAttribute('action');
@@ -195,7 +256,7 @@ export class TopicViewer extends HTMLElement {
     }
 
     private loadingExists() {
-        return this.container.querySelector('.topic-viewer-loading') !== null;
+        return this.$('.topic-viewer-loading') !== null;
     }
 
     private appendStyleSheets() {
