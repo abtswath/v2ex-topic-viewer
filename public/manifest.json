@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "V++",
   "description": "view v2ex topic content under topic",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
