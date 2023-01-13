@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Release
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: Install dependencies and build
+        run: npm install pnpm -g && pnpm install && pnpm build
+
+      - name: Pack directory
+        id: packExtensionDir
+        uses: cardinalby/webext-buildtools-pack-extension-dir-action@v1
+        with:
+          extensionDir: ./dist
+          zipFilePath: extension.zip
+
+      - name: Upload to Chrome Web Store
+        uses: mobilefirstllc/cws-publish@latest
+        with:
+          action: "upload" # one of: upload, publish, testers
+          client_id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          client_secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          refresh_token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          extension_id: "lflpklblpjagndghmjjegalblijlccmh"
+          zip_file: "./extension.zip"
