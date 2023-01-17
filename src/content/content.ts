@@ -65,9 +65,10 @@ const viewTopic = (evt: MouseEvent) => {
     const anchor = el as HTMLAnchorElement;
     if (shouldCloseViewer(anchor.href)) {
         lastClickedTopic = '';
+        document.querySelector('topic-viewer')?.remove();
         rightContainer?.remove();
         rightContainer = null;
-        document.querySelector('topic-viewer')?.remove();
+        topicItem.scrollIntoView();
         return;
     }
     document.querySelector('topic-viewer')?.remove();
