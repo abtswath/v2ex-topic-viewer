@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "v2ex topic viewer",
   "description": "支持 V2EX 在主题列表页分屏浏览主题内容",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
