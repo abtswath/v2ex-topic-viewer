@@ -26,8 +26,7 @@
         "./content.js"
       ],
       "matches": [
-        "https://v2ex.com/*",
-        "https://www.v2ex.com/*"
+        "*://*.v2ex.com/*"
       ]
     }
   ]
