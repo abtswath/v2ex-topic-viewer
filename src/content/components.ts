@@ -25,8 +25,6 @@ export class TopicViewer extends HTMLElement {
 
     private loadingElement: HTMLElement;
 
-    private loading = false;
-
     constructor() {
         super();
         const shadowRoot = this.attachShadow({ mode: 'open' });
@@ -69,7 +67,6 @@ export class TopicViewer extends HTMLElement {
     }
 
     protected showLoading() {
-        this.loading = true;
         if (!this.loadingExists()) {
             this.container.appendChild(this.loadingElement);
         }
@@ -77,7 +74,6 @@ export class TopicViewer extends HTMLElement {
     }
 
     protected hideLoading() {
-        this.loading = false;
         addClass(this.loadingElement, 'topic-viewer-hide');
     }
 

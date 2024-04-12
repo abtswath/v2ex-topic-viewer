@@ -1,5 +1,5 @@
 import "@webcomponents/webcomponentsjs";
-import { FRAME_NAME, TopicViewer } from './components';
+import { TopicViewer } from './components';
 
 export const getParent = (el: HTMLElement, selector: string): HTMLElement | null => {
     if (!el.parentElement) {
@@ -40,8 +40,8 @@ let rightContainer: HTMLElement | null = null;
 const insertAfterTopicItem = (topicViewer: HTMLElement, topicItem: HTMLElement) => {
     rightContainer?.remove();
     topicViewer.setAttribute('data-height', `calc(100vh - ${topicItem.offsetHeight}px)`);
-    topicItem.scrollIntoView();
     topicItem.parentElement?.insertBefore(topicViewer, topicItem.nextElementSibling);
+    topicItem.scrollIntoView();
 }
 const insertPageRight = (topicViewer: HTMLElement, topicItem: HTMLElement) => {
     if (rightContainer === null) {
@@ -50,6 +50,12 @@ const insertPageRight = (topicViewer: HTMLElement, topicItem: HTMLElement) => {
     topicViewer.setAttribute('data-height', '100%');
     rightContainer.appendChild(topicViewer);
     topicItem.scrollIntoView();
+}
+
+const markLinkVisited = (url: string) => {
+    const current_url = window.location.href;
+    history.pushState(history.state, '', url);
+    history.pushState(history.state, '', current_url);
 }
 
 const viewTopic = (evt: MouseEvent) => {
@@ -71,6 +77,7 @@ const viewTopic = (evt: MouseEvent) => {
         topicItem.scrollIntoView();
         return;
     }
+    markLinkVisited(anchor.href);
     document.querySelector('topic-viewer')?.remove();
     const topicViewer = document.createElement('topic-viewer');
     topicViewer.setAttribute('data-uri', anchor.href);
