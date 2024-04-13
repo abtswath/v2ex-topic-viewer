@@ -10,7 +10,7 @@ jobs:
   build:
     name: Release
 
-    runs-on: ubuntu-20.04
+    runs-on: Debian-12
 
     environment: production
 
