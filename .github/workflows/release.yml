@@ -34,9 +34,9 @@ jobs:
           zipFilePath: extension.zip
 
       - name: Get oauth token
+        id: oauthToken
         run: |
-          token=$(curl https://accounts.google.com/o/oauth2/token -d "client_id=${{ secrets.GOOGLE_CLIENT_ID }}&client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}&code=${{ secrets.GOOGLE_CODE }}&grant_type=authorization_code&redirect_uri=urn:ietf:wg:oauth:2.0:oob" | grep 'refresh_token' | awk -F':' '{print $2}')
-          echo "GOOGLE_REFRESH_TOKEN=${token:1:-2}" >>$GITHUB_ENV
+          echo "::set-output name=resp::$(curl https://accounts.google.com/o/oauth2/token -d "client_id=${{ secrets.GOOGLE_CLIENT_ID }}&client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}&code=${{ secrets.GOOGLE_CODE }}&grant_type=authorization_code&redirect_uri=urn:ietf:wg:oauth:2.0:oob")"
 
       - name: Upload to Chrome Web Store
         uses: mobilefirstllc/cws-publish@latest
@@ -44,6 +44,6 @@ jobs:
           action: "upload" # one of: upload, publish, testers
           client_id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client_secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          refresh_token: ${{ env.GOOGLE_REFRESH_TOKEN }}
+          refresh_token: ${{ fromJson(steps.oauthToken.outputs.resp).refresh_token }}
           extension_id: "lflpklblpjagndghmjjegalblijlccmh"
           zip_file: "./extension.zip"
