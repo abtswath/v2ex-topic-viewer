@@ -35,7 +35,9 @@ jobs:
 
       - name: Get oauth token
         run: |
-          echo "GOOGLE_RESPONSE=$(curl https://accounts.google.com/o/oauth2/token -d "client_id=${{ secrets.GOOGLE_CLIENT_ID }}&client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}&code=${{ secrets.GOOGLE_CODE }}&grant_type=authorization_code&redirect_uri=urn:ietf:wg:oauth:2.0:oob")" >>"$GITHUB_ENV"
+          echo 'GOOGLE_RESPONSE<<EOF' >>$GITHUB_ENV
+          curl https://accounts.google.com/o/oauth2/token -d "client_id=${{ secrets.GOOGLE_CLIENT_ID }}&client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}&code=${{ secrets.GOOGLE_CODE }}&grant_type=authorization_code&redirect_uri=urn:ietf:wg:oauth:2.0:oob" >>$GITHUB_ENV
+          echo 'EOF' >>$GITHUB_ENV
 
       - name: Upload to Chrome Web Store
         uses: mobilefirstllc/cws-publish@latest
